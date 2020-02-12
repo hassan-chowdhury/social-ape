@@ -9,7 +9,7 @@ module ExceptionHandler
     class DecodeError < StandardError; end
 
     included do
-        # Define custom handlers
+        # Define custom handlers (https://apidock.com/rails/ActiveSupport/Rescuable/ClassMethods/rescue_from)
         rescue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
         rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized_request
         rescue_from ExceptionHandler::MissingToken, with: :four_twenty_two
