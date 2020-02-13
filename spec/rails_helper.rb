@@ -1,6 +1,8 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-require 'database_cleaner'
 require 'spec_helper'
+
+require 'database_cleaner'
+
 ENV['RAILS_ENV'] ||= 'test'
 
 require File.expand_path('../config/environment', __dir__)
@@ -23,7 +25,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
@@ -49,6 +51,13 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # add `FactoryBot` methods
+  config.include FactoryBot::Syntax::Methods
+
+  # previously `config.include RequestSpecHelper, type: :request`
+  config.include(RequestSpecHelper)
+  config.include(ControllerSpecHelper)
+
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
   # `post` in specs under `spec/controllers`.
@@ -68,11 +77,6 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
-
-  config.include RequestSpecHelper, type: :request
-
-  # add `FactoryBot` methods
-  config.include FactoryBot::Syntax::Methods
 
   # start by truncating all the tables but then use the faster transaction 
   # strategy the rest of the time.
