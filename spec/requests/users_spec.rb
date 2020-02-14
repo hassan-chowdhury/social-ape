@@ -25,7 +25,7 @@ RSpec.describe 'Users API', type: :request do
 
         context 'when invalid request' do
         
-            context 'does not include name and email' do
+            context 'does not include name, email, password' do
                 before { post '/auth/register', params: {}, headers: headers }
     
                 it 'returns a validation failure message' do
