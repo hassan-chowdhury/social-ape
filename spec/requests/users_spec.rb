@@ -39,10 +39,10 @@ RSpec.describe 'Users API', type: :request do
             end
 
             context 'cannot register a new user using an existing email' do
-                before do
+                before {
                     post '/auth/register', params: valid_attributes.to_json, headers: headers
                     post '/auth/register', params: valid_attributes.to_json, headers: headers
-                end
+                }
     
                 it 'returns a validation failure message' do
                     expect(json['email'][0]).to eq("Email already in use!")
