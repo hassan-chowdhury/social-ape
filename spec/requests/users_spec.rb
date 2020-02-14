@@ -3,21 +3,16 @@ require 'rails_helper'
 
 
 RSpec.describe 'Users API', type: :request do
-
+    let(:user) { build(:user) }
+    let(:headers) { valid_headers.except('Authorization') }
+    let(:valid_attributes) do
+        attributes_for(:user, password_confirmation: user.password)
+    end
     # Test suite for POST /auth/register
     describe 'POST /auth/register' do
-        # valid payload
-        let(:valid_attributes) { 
-            { 
-                name: 'example',
-                email: 'example@example.com',
-                password: 'example',
-                password_confirmation: 'example'
-            } 
-        }
 
-        context 'when the request is valid' do
-            before { post '/auth/register', params: valid_attributes }
+        context 'when request valid' do
+            before { post '/auth/register', params: valid_attributes.to_json, headers: headers }
 
             it 'returns a success message' do
                 expect(json['message']).to eq("User created successfully.")
@@ -28,32 +23,36 @@ RSpec.describe 'Users API', type: :request do
             end
         end
 
-        context 'when the request does not include name and email' do
-            before { post '/auth/register', params: { password: 'hello' } }
-
-            it 'returns a validation failure message' do
-                expect(json['name'][0]).to eq("can't be blank")
-                expect(json['email'][0]).to eq("can't be blank")
+        context 'when invalid request' do
+        
+            context 'does not include name and email' do
+                before { post '/auth/register', params: {}, headers: headers }
+    
+                it 'returns a validation failure message' do
+                    expect(json.keys).to contain_exactly("name", "email", "password", "password_digest")
+                    json.values.each { |v| expect(v[0]).to eq("can't be blank") }
+                end
+    
+                it 'returns status code 400' do
+                    expect(response).to have_http_status(400)
+                end
             end
 
-            it 'returns status code 400' do
-                expect(response).to have_http_status(400)
+            context 'cannot register a new user using an existing email' do
+                before do
+                    post '/auth/register', params: valid_attributes.to_json, headers: headers
+                    post '/auth/register', params: valid_attributes.to_json, headers: headers
+                end
+    
+                it 'returns a validation failure message' do
+                    expect(json['email'][0]).to eq("Email already in use!")
+                end
+    
+                it 'returns status code 400' do
+                    expect(response).to have_http_status(400)
+                end
             end
-        end
-
-        context 'cannot register a new user using an existing email' do
-            before {
-                post '/auth/register', params: valid_attributes
-                post '/auth/register', params: valid_attributes
-            }
-
-            it 'returns a validation failure message' do
-                expect(json['email'][0]).to eq("Email already in use!")
-            end
-
-            it 'returns status code 400' do
-                expect(response).to have_http_status(400)
-            end
+        
         end
 
     end
