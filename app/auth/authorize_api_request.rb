@@ -34,8 +34,7 @@ class AuthorizeApiRequest
         #     errors.add(:token, 'Missing token')
         # end
         # nil
-        # byebug
-        puts headers
+        
         if headers['Authorization'].present?
             return headers['Authorization'].split(' ').last
         end

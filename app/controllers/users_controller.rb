@@ -3,6 +3,7 @@ class UsersController < ApplicationController
     
     # POST /register
     def register
+        # byebug
         @user = User.create(user_params)
         
         if @user.save
@@ -20,11 +21,7 @@ class UsersController < ApplicationController
     private
 
     def user_params
-        params.permit(
-            :name,
-            :email,
-            :password
-        )
+        params.permit(:name, :email, :password)
     end
 
     def authenticate(email, password)
